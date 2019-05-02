@@ -20,6 +20,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import br.ce.wcaquino.builder.FilmeBuilder;
+import br.ce.wcaquino.builder.UsuarioBuilder;
 import br.ce.wcaquino.entidades.Filme;
 import br.ce.wcaquino.entidades.Locacao;
 import br.ce.wcaquino.entidades.Usuario;
@@ -56,19 +58,19 @@ public class LocacaoServiceTest {
 	public void testeLocacao() throws Exception {
 		
 		//cenario
-		Usuario usuario = new Usuario("Usuario 1");
-		List<Filme> filmes = Arrays.asList(new Filme("Filme 1", 2, 5.0));
+		Usuario usuario = UsuarioBuilder.umUsuario().agora();
+		List<Filme> filmes = Arrays.asList(FilmeBuilder.umFilme().agora());
 		
 		//acao
 		Locacao locacao = service.alugarFilme(usuario, filmes);
 			
 		//verificacao
-		Assert.assertEquals("Erro na linha 64 ", 5.0, locacao.getValor(), 0.01); //comentario para facilitar a localização do erro
+		Assert.assertEquals("Erro na linha 64 ", 4.0, locacao.getValor(), 0.01); //comentario para facilitar a localização do erro
 		Assert.assertTrue(DataUtils.isMesmaData(locacao.getDataLocacao(), new Date()));
 		Assert.assertTrue(DataUtils.isMesmaData(locacao.getDataRetorno(), DataUtils.obterDataComDiferencaDias(1)));
 		
-		Assert.assertThat(locacao.getValor(), CoreMatchers.is(CoreMatchers.equalTo(5.0))); //verifique que
-		Assert.assertThat(locacao.getValor(), CoreMatchers.is(CoreMatchers.not(4.0)));
+		Assert.assertThat(locacao.getValor(), CoreMatchers.is(CoreMatchers.equalTo(4.0))); //verifique que
+		Assert.assertThat(locacao.getValor(), CoreMatchers.is(CoreMatchers.not(5.0)));
 		assertThat(isMesmaData(locacao.getDataLocacao(), new Date()), is(true));
 		assertThat(isMesmaData(locacao.getDataRetorno(), obterDataComDiferencaDias(3)), is(false)); //aqui foi realizado o importe estatico
 		
@@ -77,8 +79,8 @@ public class LocacaoServiceTest {
 	@Test(expected = FilmeSemEstoqueException.class)
 	public void testeFilmeSemEstoque() throws Exception {
 		
-		Usuario usuario = new Usuario("Usuario 1");
-		List<Filme> filmes = Arrays.asList(new Filme("Filme 1", 0, 5.0));
+		Usuario usuario = UsuarioBuilder.umUsuario().agora();
+		List<Filme> filmes = Arrays.asList(FilmeBuilder.umFilme().semEstoque().agora());
 		
 		service.alugarFilme(usuario, filmes);
 	}
@@ -86,7 +88,7 @@ public class LocacaoServiceTest {
 	@Test
 	public void testeUsuarioVazio() throws FilmeSemEstoqueException {
 
-		List<Filme> filmes = Arrays.asList(new Filme("Filme 1", 2, 5.0));
+		List<Filme> filmes = Arrays.asList(FilmeBuilder.umFilme().agora());
 
 		try {
 			service.alugarFilme(null, filmes);
@@ -100,7 +102,7 @@ public class LocacaoServiceTest {
 	@Test
 	public void testeFilmeVazio() throws FilmeSemEstoqueException, LocadoraException {
 		
-		Usuario usuario = new Usuario("Usuario 1");
+		Usuario usuario = UsuarioBuilder.umUsuario().agora();
 		
 		exception.expect(LocadoraException.class);
 		exception.expectMessage("Filme vazio");
@@ -114,8 +116,8 @@ public class LocacaoServiceTest {
 		//indica para o teste ser executado somente aos sábados
 		Assume.assumeTrue(DataUtils.verificarDiaSemana(new Date(), Calendar.SATURDAY)); 
 		
-		Usuario usuario = new Usuario("Usuario 1");
-		List<Filme> filmes = Arrays.asList(new Filme("Filme 1", 5, 3.0));
+		Usuario usuario = UsuarioBuilder.umUsuario().agora();
+		List<Filme> filmes = Arrays.asList(FilmeBuilder.umFilme().agora());
 		
 		Locacao retorno = service.alugarFilme(usuario, filmes);
 		

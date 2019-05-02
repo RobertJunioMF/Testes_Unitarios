@@ -14,6 +14,8 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameter;
 import org.junit.runners.Parameterized.Parameters;
 
+import br.ce.wcaquino.builder.FilmeBuilder;
+import br.ce.wcaquino.builder.UsuarioBuilder;
 import br.ce.wcaquino.entidades.Filme;
 import br.ce.wcaquino.entidades.Locacao;
 import br.ce.wcaquino.entidades.Usuario;
@@ -30,12 +32,12 @@ public class CalculoValorLocacaoTest {
 	public Double valorLocacao;
 	@Parameter(value=2) //terceiro registro da matriz de parametros
 	public String msg;
-	private static Filme filme1 = new Filme("Filme 1", 3, 4.0);
-	private static Filme filme2 = new Filme("Filme 2", 3, 4.0);
-	private static Filme filme3 = new Filme("Filme 3", 3, 4.0);
-	private static Filme filme4 = new Filme("Filme 4", 3, 4.0);
-	private static Filme filme5 = new Filme("Filme 5", 3, 4.0);
-	private static Filme filme6 = new Filme("Filme 6", 3, 4.0);
+	private static Filme filme1 = FilmeBuilder.umFilme().agora();
+	private static Filme filme2 = FilmeBuilder.umFilme().agora();
+	private static Filme filme3 = FilmeBuilder.umFilme().agora();
+	private static Filme filme4 = FilmeBuilder.umFilme().agora();
+	private static Filme filme5 = FilmeBuilder.umFilme().agora();
+	private static Filme filme6 = FilmeBuilder.umFilme().agora();
 		
 	@Before
 	public void setup() {
@@ -55,7 +57,7 @@ public class CalculoValorLocacaoTest {
 	@Test
 	public void testeCalculoValorConsiderandoDescontos() throws FilmeSemEstoqueException, LocadoraException {
 	
-		Usuario usuario = new Usuario("Usuario 1");
+		Usuario usuario = UsuarioBuilder.umUsuario().agora();
 		
 		Locacao resultado = service.alugarFilme(usuario, filmes);
 		
