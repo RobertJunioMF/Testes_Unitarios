@@ -13,6 +13,7 @@ import java.util.List;
 import org.hamcrest.CoreMatchers;
 import org.junit.AfterClass;
 import org.junit.Assert;
+import org.junit.Assume;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Rule;
@@ -163,12 +164,15 @@ public class LocacaoServiceTest {
 	
 	@Test
 	public void testeSemDevolucaoAosDomingos() throws FilmeSemEstoqueException, LocadoraException {
+		
+		Assume.assumeTrue(DataUtils.verificarDiaSemana(new Date(), Calendar.SATURDAY)); //indica para o teste ser executado somente aos sábados
+		
 		Usuario usuario = new Usuario("Usuario 1");
 		List<Filme> filmes = Arrays.asList(new Filme("Filme 1", 5, 3.0));
 		
 		Locacao retorno = service.alugarFilme(usuario, filmes);
 		
 		boolean valido = DataUtils.verificarDiaSemana(retorno.getDataRetorno(), Calendar.SUNDAY);
-		Assert.assertFalse(false);
+		Assert.assertFalse(valido);
 	}
 }
