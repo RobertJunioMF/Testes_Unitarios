@@ -8,7 +8,10 @@ import static org.junit.Assert.assertThat;
 import java.util.Date;
 
 import org.hamcrest.CoreMatchers;
+import org.junit.AfterClass;
 import org.junit.Assert;
+import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -21,15 +24,34 @@ import br.ce.wcaquino.exceptions.LocadoraException;
 import br.ce.wcaquino.utils.DataUtils;
 
 public class LocacaoServiceTest {
-
+	
+	/*
+	 * Declarar uma variavel estatica impede que o junit reinicie a variavel
+	 */
+	private LocacaoService service;
+		
 	@Rule
 	public ExpectedException exception = ExpectedException.none();
+	
+	@Before //executa antes do teste
+	public void setup() {
+		service = new LocacaoService();
+	}
+	
+	@BeforeClass
+	public static void beforeClass() {
+		System.out.println("Before class");
+	}
+	
+	@AfterClass
+	public static void afterClass() {
+		System.out.println("After class");
+	}
 	
 	@Test
 	public void testeLocacao() throws Exception {
 		
 		//cenario
-		LocacaoService service = new LocacaoService();
 		Usuario usuario = new Usuario("Usuario 1");
 		Filme filme = new Filme("Filme 1", 2, 5.0);
 		
@@ -51,7 +73,6 @@ public class LocacaoServiceTest {
 	@Test(expected = FilmeSemEstoqueException.class)
 	public void testeFilmeSemEstoque() throws Exception {
 		
-		LocacaoService service = new LocacaoService();
 		Usuario usuario = new Usuario("Usuario 1");
 		Filme filme = new Filme("Filme 1", 0, 5.0);
 		
@@ -61,7 +82,6 @@ public class LocacaoServiceTest {
 	@Test
 	public void testeUsuarioVazio() throws FilmeSemEstoqueException {
 		
-		LocacaoService service = new LocacaoService();
 		Filme filme = new Filme("Filme 1", 1, 5.0);
 		
 		try {
@@ -75,7 +95,6 @@ public class LocacaoServiceTest {
 	@Test
 	public void testeFilmeVazio() throws FilmeSemEstoqueException, LocadoraException {
 		
-		LocacaoService service = new LocacaoService();
 		Usuario usuario = new Usuario("Usuario 1");
 		
 		exception.expect(LocadoraException.class);
