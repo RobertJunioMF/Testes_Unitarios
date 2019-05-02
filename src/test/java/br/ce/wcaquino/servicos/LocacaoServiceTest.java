@@ -6,6 +6,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -111,7 +112,8 @@ public class LocacaoServiceTest {
 	public void testeDescontoNoFilme3() throws FilmeSemEstoqueException, LocadoraException {
 		//25% desconto no terceiro filme
 		Usuario usuario = new Usuario("Usuario 1");
-		List<Filme> filmes = Arrays.asList(new Filme("Filme 1", 3, 4.0), new Filme("Filme 2", 3, 4.0), new Filme("Filme 3", 1, 4.0));
+		List<Filme> filmes = Arrays.asList(new Filme("Filme 1", 3, 4.0), new Filme("Filme 2", 3, 4.0), 
+				new Filme("Filme 3", 1, 4.0));
 	
 		Locacao resultado = service.alugarFilme(usuario, filmes);
 		//4+4+3
@@ -123,7 +125,8 @@ public class LocacaoServiceTest {
 		//50% desconto no quarto filme
 		Usuario usuario = new Usuario("Usuario 1");
 		List<Filme> filmes = Arrays.asList(
-				new Filme("Filme 1", 3, 4.0), new Filme("Filme 2", 3, 4.0), new Filme("Filme 3", 1, 4.0), new Filme("Filme 4", 1, 4.0));
+				new Filme("Filme 1", 3, 4.0), new Filme("Filme 2", 3, 4.0), 
+				new Filme("Filme 3", 1, 4.0), new Filme("Filme 4", 1, 4.0));
 	
 		Locacao resultado = service.alugarFilme(usuario, filmes);
 		//4+4+3+2
@@ -156,5 +159,16 @@ public class LocacaoServiceTest {
 		Locacao resultado = service.alugarFilme(usuario, filmes);
 		//4+4+3+2+1
 		assertThat(resultado.getValor(), is(14.0));
+	}
+	
+	@Test
+	public void testeSemDevolucaoAosDomingos() throws FilmeSemEstoqueException, LocadoraException {
+		Usuario usuario = new Usuario("Usuario 1");
+		List<Filme> filmes = Arrays.asList(new Filme("Filme 1", 5, 3.0));
+		
+		Locacao retorno = service.alugarFilme(usuario, filmes);
+		
+		boolean valido = DataUtils.verificarDiaSemana(retorno.getDataRetorno(), Calendar.SUNDAY);
+		Assert.assertFalse(false);
 	}
 }
