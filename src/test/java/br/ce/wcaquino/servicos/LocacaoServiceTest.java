@@ -20,6 +20,7 @@ import org.junit.rules.ExpectedException;
 import org.mockito.Mockito;
 
 import br.ce.wcaquino.builder.FilmeBuilder;
+import br.ce.wcaquino.builder.LocacaoBuilder;
 import br.ce.wcaquino.builder.UsuarioBuilder;
 import br.ce.wcaquino.dao.LocacaoDAO;
 import br.ce.wcaquino.entidades.Filme;
@@ -37,6 +38,7 @@ public class LocacaoServiceTest {
 	private LocacaoService service;
 	private SPCService spc;
 	private LocacaoDAO dao;
+	private EmailService email;
 		
 	@Rule
 	public ExpectedException exception = ExpectedException.none();
@@ -48,6 +50,8 @@ public class LocacaoServiceTest {
 		service.setLocacaoDAO(dao);
 		spc = Mockito.mock(SPCService.class);
 		service.setSPCService(spc);
+		email = Mockito.mock(EmailService.class);
+		service.setEmailService(email);
 	}
 	
 //	@BeforeClass
@@ -132,19 +136,36 @@ public class LocacaoServiceTest {
 	}
 	
 	@Test
-	public void testeNaoAlugarParaNegativadoSPC() throws FilmeSemEstoqueException, LocadoraException {
+	public void testeNaoAlugarParaNegativadoSPC() throws FilmeSemEstoqueException {
 		
 		Usuario usuario = UsuarioBuilder.umUsuario().agora();
 		List<Filme> filmes = Arrays.asList(FilmeBuilder.umFilme().agora());
 		
 		Mockito.when(spc.possuiNegativacao(usuario)).thenReturn(true);
+				
+		try {
+			service.alugarFilme(usuario, filmes);
+			Assert.fail();
+		} catch (LocadoraException e) {
+			Assert.assertThat(e.getMessage(), CoreMatchers.is("Usuário Negativado"));
+		}
 		
-		exception.expect(LocadoraException.class);
-		exception.expectMessage("Usuário Negativado");;
-		
-		service.alugarFilme(usuario, filmes);
+		Mockito.verify(spc).possuiNegativacao(usuario);
 	}
 	
+	@Test
+	public void testeEnvioEmailParaLocacoesAtrasadas() {
+
+		Usuario usuario = UsuarioBuilder.umUsuario().agora();
+		List<Locacao> locacoes = Arrays.asList(LocacaoBuilder.umLocacao().comUsuario(usuario)
+				.comDataLocacao(DataUtils.obterDataComDiferencaDias(-2)).agora());
+		Mockito.when(dao.obterLocacoesPendentes()).thenReturn(locacoes);
+
+		service.notificarAtrasos();
+
+		Mockito.verify(email).notificarAtraso(usuario);
+	}
+
 //	@Test
 //	public void testeDescontoNoFilme3() throws FilmeSemEstoqueException, LocadoraException {
 //		//25% desconto no terceiro filme
