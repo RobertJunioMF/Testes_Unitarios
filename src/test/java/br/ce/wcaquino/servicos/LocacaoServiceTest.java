@@ -157,13 +157,19 @@ public class LocacaoServiceTest {
 	public void testeEnvioEmailParaLocacoesAtrasadas() {
 
 		Usuario usuario = UsuarioBuilder.umUsuario().agora();
+		Usuario usuario2 = UsuarioBuilder.umUsuario().comNome("Usuário 2").agora();
 		List<Locacao> locacoes = Arrays.asList(LocacaoBuilder.umLocacao().comUsuario(usuario)
-				.comDataLocacao(DataUtils.obterDataComDiferencaDias(-2)).agora());
+				.comDataLocacao(DataUtils.obterDataComDiferencaDias(-4))
+				.comDataRetorno(DataUtils.obterDataComDiferencaDias(-2)).agora(),
+				LocacaoBuilder.umLocacao().comUsuario(usuario2).agora());
+				
 		Mockito.when(dao.obterLocacoesPendentes()).thenReturn(locacoes);
 
 		service.notificarAtrasos();
 
 		Mockito.verify(email).notificarAtraso(usuario);
+		Mockito.verify(email, Mockito.never()).notificarAtraso(usuario2);
+		Mockito.verify(email, Mockito.times(1)).notificarAtraso(Mockito.any(Usuario.class)); //não importa o usuário, mas sim que tenha enviado pelo menos 1 email
 	}
 
 //	@Test
