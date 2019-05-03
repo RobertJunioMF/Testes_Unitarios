@@ -11,17 +11,17 @@ import java.util.Date;
 import java.util.List;
 
 import org.hamcrest.CoreMatchers;
-import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Assume;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.mockito.Mockito;
 
 import br.ce.wcaquino.builder.FilmeBuilder;
 import br.ce.wcaquino.builder.UsuarioBuilder;
+import br.ce.wcaquino.dao.LocacaoDAO;
 import br.ce.wcaquino.entidades.Filme;
 import br.ce.wcaquino.entidades.Locacao;
 import br.ce.wcaquino.entidades.Usuario;
@@ -42,18 +42,20 @@ public class LocacaoServiceTest {
 	@Before //executa antes do teste
 	public void setup() {
 		service = new LocacaoService();
+		LocacaoDAO dao = Mockito.mock(LocacaoDAO.class);
+		service.setLocacaoDAO(dao);
 	}
 	
-	@BeforeClass
-	public static void beforeClass() {
-		//System.out.println("Before class");
-	}
-	
-	@AfterClass
-	public static void afterClass() {
-		//System.out.println("After class");
-	}
-	
+//	@BeforeClass
+//	public static void beforeClass() {
+//		System.out.println("Before class");
+//	}
+//	
+//	@AfterClass
+//	public static void afterClass() {
+//		System.out.println("After class");
+//	}
+//	
 	@Test
 	public void testeLocacao() throws Exception {
 		
