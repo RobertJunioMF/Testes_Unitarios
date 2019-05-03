@@ -35,6 +35,8 @@ public class LocacaoServiceTest {
 	 * Declarar uma variavel estatica impede que o junit reinicie a variavel
 	 */
 	private LocacaoService service;
+	private SPCService spc;
+	private LocacaoDAO dao;
 		
 	@Rule
 	public ExpectedException exception = ExpectedException.none();
@@ -42,8 +44,10 @@ public class LocacaoServiceTest {
 	@Before //executa antes do teste
 	public void setup() {
 		service = new LocacaoService();
-		LocacaoDAO dao = Mockito.mock(LocacaoDAO.class);
+		dao = Mockito.mock(LocacaoDAO.class);
 		service.setLocacaoDAO(dao);
+		spc = Mockito.mock(SPCService.class);
+		service.setSPCService(spc);
 	}
 	
 //	@BeforeClass
@@ -125,6 +129,20 @@ public class LocacaoServiceTest {
 		
 		boolean valido = DataUtils.verificarDiaSemana(retorno.getDataRetorno(), Calendar.SUNDAY);
 		Assert.assertFalse(valido);
+	}
+	
+	@Test
+	public void testeNaoAlugarParaNegativadoSPC() throws FilmeSemEstoqueException, LocadoraException {
+		
+		Usuario usuario = UsuarioBuilder.umUsuario().agora();
+		List<Filme> filmes = Arrays.asList(FilmeBuilder.umFilme().agora());
+		
+		Mockito.when(spc.possuiNegativacao(usuario)).thenReturn(true);
+		
+		exception.expect(LocadoraException.class);
+		exception.expectMessage("Usuário Negativado");;
+		
+		service.alugarFilme(usuario, filmes);
 	}
 	
 //	@Test

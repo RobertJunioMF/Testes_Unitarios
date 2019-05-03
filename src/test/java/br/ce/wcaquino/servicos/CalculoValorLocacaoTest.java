@@ -28,6 +28,8 @@ import br.ce.wcaquino.exceptions.LocadoraException;
 public class CalculoValorLocacaoTest {
 
 	private LocacaoService service;
+	private SPCService spc;
+	private LocacaoDAO dao;
 	@Parameter //primeiro registo da matriz de parametros
 	public List<Filme> filmes;
 	@Parameter(value=1) //segundo registro da matriz de parametros
@@ -44,8 +46,10 @@ public class CalculoValorLocacaoTest {
 	@Before
 	public void setup() {
 		service = new LocacaoService();
-		LocacaoDAO dao = Mockito.mock(LocacaoDAO.class);
+		dao = Mockito.mock(LocacaoDAO.class);
 		service.setLocacaoDAO(dao);
+		spc = Mockito.mock(SPCService.class);
+		service.setSPCService(spc);
 	}
 	
 	@Parameters(name="{2}")
