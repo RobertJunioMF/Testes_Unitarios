@@ -24,6 +24,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 import br.ce.wcaquino.builder.FilmeBuilder;
@@ -37,6 +38,8 @@ import br.ce.wcaquino.exceptions.FilmeSemEstoqueException;
 import br.ce.wcaquino.exceptions.LocadoraException;
 import br.ce.wcaquino.utils.DataUtils;
 
+@RunWith(PowerMockRunner.class)
+@PrepareForTest({LocacaoService.class})
 public class LocacaoServiceTest {
 	
 	/*
@@ -57,6 +60,7 @@ public class LocacaoServiceTest {
 	@Before //executa antes do teste
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
+		service = PowerMockito.spy(service);
 	}
 	
 //	@BeforeClass
@@ -206,6 +210,18 @@ public class LocacaoServiceTest {
 		Locacao locacaoRetornado = argCapt.getValue();
 		
 		Assert.assertThat(locacaoRetornado.getValor(), CoreMatchers.is(12.0));
+	}
+	
+	@Test
+	public void testeAlugarSemCalcularValor() throws Exception {
+		
+		Usuario usuario = UsuarioBuilder.umUsuario().agora();
+		List<Filme> filmes = Arrays.asList(FilmeBuilder.umFilme().agora());
+		PowerMockito.doReturn(1.0).when(service, "calcularValorLocacao", filmes);
+		
+		Locacao locacao = service.alugarFilme(usuario, filmes);
+		
+		Assert.assertThat(locacao.getValor(), CoreMatchers.is(1.0));
 	}
 	
 //	@Test
