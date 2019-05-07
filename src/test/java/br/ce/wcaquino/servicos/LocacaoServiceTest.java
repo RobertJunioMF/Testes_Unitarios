@@ -12,7 +12,6 @@ import java.util.List;
 
 import org.hamcrest.CoreMatchers;
 import org.junit.Assert;
-import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -26,6 +25,7 @@ import org.mockito.MockitoAnnotations;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
+import org.powermock.reflect.Whitebox;
 
 import br.ce.wcaquino.builder.FilmeBuilder;
 import br.ce.wcaquino.builder.LocacaoBuilder;
@@ -222,6 +222,16 @@ public class LocacaoServiceTest {
 		Locacao locacao = service.alugarFilme(usuario, filmes);
 		
 		Assert.assertThat(locacao.getValor(), CoreMatchers.is(1.0));
+	}
+	
+	@Test
+	public void testeCalcularValorLocacao() throws Exception {
+		
+		List<Filme> filmes = Arrays.asList(FilmeBuilder.umFilme().agora());
+		
+		Double valor = (Double) Whitebox.invokeMethod(service , "calcularValorLocacao", filmes);
+		
+		Assert.assertThat(valor, is(4.0));
 	}
 	
 //	@Test
