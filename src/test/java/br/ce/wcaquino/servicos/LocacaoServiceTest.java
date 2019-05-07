@@ -17,11 +17,14 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.powermock.api.mockito.PowerMockito;
+import org.powermock.modules.junit4.PowerMockRunner;
 
 import br.ce.wcaquino.builder.FilmeBuilder;
 import br.ce.wcaquino.builder.LocacaoBuilder;
@@ -124,12 +127,14 @@ public class LocacaoServiceTest {
 	}
 	
 	@Test
-	public void testeSemDevolucaoAosDomingos() throws FilmeSemEstoqueException, LocadoraException {
+	public void testeSemDevolucaoAosDomingos() throws Exception {
 		//indica para o teste ser executado somente aos sábados
-		Assume.assumeTrue(DataUtils.verificarDiaSemana(new Date(), Calendar.SATURDAY)); 
+		//Assume.assumeTrue(DataUtils.verificarDiaSemana(new Date(), Calendar.SATURDAY)); 
 		
 		Usuario usuario = UsuarioBuilder.umUsuario().agora();
 		List<Filme> filmes = Arrays.asList(FilmeBuilder.umFilme().agora());
+		
+		PowerMockito.whenNew(Date.class).withNoArguments().thenReturn(DataUtils.obterData(11, 5, 2019));
 		
 		Locacao retorno = service.alugarFilme(usuario, filmes);
 		
